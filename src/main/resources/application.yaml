@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/vehical_management
+    username: postgres
+    password: 2001
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+server:
+  port: 8084
+
+application:
+  jwtSecret: ${JWT_SECRET_DEV:makeSuperSecretStringThatSoDifficultToGuessAndSoLongThatNoOneCanRemember1000WordsXRQmTFFJ95m359028m5235b259n02qbnq56}
+  jwtRefreshTokenSecret: ${JWT_REFRESHER_SECRET_DEV:makeSuperSecretStringThatSoDifficultToGuessAndSoLongThatNoOneCanRemember1000WordsXRQmTFFJ95m359028m5235b259n02qbnq56}
+  jwtExpiration: 36000000  #miliseconds
+  jwtExpirationRefreshToken: 432000000 #miliseconds
+
