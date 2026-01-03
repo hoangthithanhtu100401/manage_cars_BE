@@ -9,4 +9,18 @@ public enum EntryExitType {
     EntryExitType(String name) {
         this.name = name;
     }
+
+    public static EntryExitType of(String name) {
+        if (name == null) {
+            return null;
+        }
+
+        for (EntryExitType value : EntryExitType.values()) {
+            if (name.equalsIgnoreCase(value.name)) {
+                return value;
+            }
+        }
+
+        return null;
+    }
 }

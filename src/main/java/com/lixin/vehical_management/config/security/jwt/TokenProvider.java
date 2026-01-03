@@ -107,16 +107,6 @@ public class TokenProvider {
     public UsernamePasswordAuthenticationToken loginWithLocal(ServletRequest servletRequest, ServletResponse servletResponse,
                                                               FilterChain filterChain, HttpServletRequest request,
                                                               HttpServletResponse response, String jwt) throws IOException, ServletException {
-        LOGGER.debug(" * validating jwt...");
-        try {
-            jwtUtils.validateJwtToken(jwt);
-        } catch (ExpiredJwtException e) {
-            response.sendError(HttpServletResponse.SC_GONE, e.getMessage());
-            return null;
-        } catch (Exception e) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
-            return null;
-        }
         Claims claims = jwtUtils.getAllClaimsFromToken(jwt);
         String userName = claims.getSubject();
         LOGGER.debug(" * Checking user's token: " + userName);
@@ -126,8 +116,7 @@ public class TokenProvider {
         };
         claims.get("authorities", List.class).stream().forEach(consumer);
         Employee userDetails = userRepository.findEmployeeByUserName(userName);
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = createSecurityContexHolder(userDetails, authorities, request);
-        return usernamePasswordAuthenticationToken;
+        return createSecurityContexHolder(userDetails, authorities, request);
     }
 
     private UsernamePasswordAuthenticationToken createSecurityContexHolder(Employee userDetails, List<SimpleGrantedAuthority> authorities, HttpServletRequest request) {

@@ -9,7 +9,8 @@ import java.util.List;
 
 public interface VehicleService {
     VehicleResponse registerVehicle(VehicleRequest vehicleRequest, Long employeeId);
-    VehicleResponse updateVehicle(VehicleRequest userRequest);
-    void deleteVehicle(VehicleRequest userRequest);
+    VehicleResponse updateVehicle(VehicleRequest userRequest, Long vehicleId);
+    void deleteVehicle(Long vehicleId);
     List<VehicleResponse> getVehicles();
+    VehicleResponse getVehicleById(Long id);
 }

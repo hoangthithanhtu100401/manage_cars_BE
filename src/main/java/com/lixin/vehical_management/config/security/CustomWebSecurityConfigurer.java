@@ -101,12 +101,6 @@ public class CustomWebSecurityConfigurer {
         return configuration.getAuthenticationManager();
     }
 
-
-//    @Bean
-//    public WebSecurityCustomizer webSecurityCustomizer() {
-//        return (web) -> web.ignoring().requestMatchers(permitAllPaths());
-//    }
-
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 //        // Set permission on endpoints
@@ -124,6 +118,7 @@ public class CustomWebSecurityConfigurer {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/error/**").permitAll()
                         .requestMatchers(permitAllPaths()).permitAll()
+                        .anyRequest().permitAll()
                 );;
         http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(exceptionHandlerFilter(), LogoutFilter.class);
