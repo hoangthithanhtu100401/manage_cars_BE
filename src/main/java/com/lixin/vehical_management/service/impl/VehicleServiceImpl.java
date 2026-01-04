@@ -48,10 +48,11 @@ public class VehicleServiceImpl implements VehicleService {
                         .createdAt(LocalDateTime.now())
                         .build();
                 vehicleRepository.save(vehicle);
+                EntryExitType entryExitType = EntryExitType.of(vehicleRequest.getVehicleStatus());
                 EntryExitRecord entryExitRecord = EntryExitRecord.builder()
                         .employee(employee)
                         .vehicle(vehicle)
-                        .type(EntryExitType.IN)
+                        .type(entryExitType)
                         .eventTime(LocalDateTime.now())
                         .build();
                 exitRecordRepository.save(entryExitRecord);
@@ -62,9 +63,9 @@ public class VehicleServiceImpl implements VehicleService {
                         .licenseNumber(vehicle.getLicenseNumber())
                         .phone(vehicle.getPhone())
                         .createdAt(vehicle.getCreatedAt())
-                        .lastIn(entryExitRecord.getEventTime().toString())
-                        .lastOut("not yet")
-                        .status(EntryExitType.IN.name)
+                        .lastIn(entryExitType.equals(EntryExitType.IN) ? entryExitRecord.getEventTime().toString() : "not yet")
+                        .lastOut(entryExitType.equals(EntryExitType.OUT) ? entryExitRecord.getEventTime().toString() : "not yet")
+                        .status(entryExitType.name)
                         .build();
             }
         }

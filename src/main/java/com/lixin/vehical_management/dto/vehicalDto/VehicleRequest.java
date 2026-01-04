@@ -12,4 +12,5 @@ public class VehicleRequest {
     private String licenseNumber;
     private String owner;
     private String phone;
+    private String vehicleStatus;
 }
