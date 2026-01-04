@@ -24,9 +24,8 @@ public class MainController {
 
     @PostMapping("/vehicle" )
     @Operation(summary = "Register new vehicle", description = "Register a new vehicle in the system")
-    public ResponseEntity<?> registerNewVehicle(@Valid @RequestBody VehicleRequest vehicleRequest,
-                                                @RequestParam(name = "employeeId") Long employeeId) {
-        return ResponseEntity.ok(new BaseResponse<>(CommonMessage.SUCCESS, vehicleService.registerVehicle(vehicleRequest, employeeId)));
+    public ResponseEntity<?> registerNewVehicle(@Valid @RequestBody VehicleRequest vehicleRequest) {
+        return ResponseEntity.ok(new BaseResponse<>(CommonMessage.SUCCESS, vehicleService.registerVehicle(vehicleRequest)));
     }
 
     @GetMapping("/vehicle" )

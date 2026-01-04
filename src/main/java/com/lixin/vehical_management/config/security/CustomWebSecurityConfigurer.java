@@ -115,7 +115,7 @@ public class CustomWebSecurityConfigurer {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/error/**").permitAll()
                         .requestMatchers(permitAllPaths()).permitAll()
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 );;
         http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(exceptionHandlerFilter(), LogoutFilter.class);
@@ -142,8 +142,7 @@ public class CustomWebSecurityConfigurer {
                 "/api/v1/register",
                 "/api/v1/refreshToken",
                 "/api/v1/logout",
-                "/api/v1/login",
-                "/api/v1/**"
+                "/api/v1/login"
         };
         String[] swaggerPaths = new String[]{
                 "/swagger-ui.html",

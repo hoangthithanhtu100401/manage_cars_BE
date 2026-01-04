@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -104,20 +105,47 @@ public class TokenProvider {
         return jwtUtils.validateJwtToken(jwt);
     }
 
-    public UsernamePasswordAuthenticationToken loginWithLocal(ServletRequest servletRequest, ServletResponse servletResponse,
-                                                              FilterChain filterChain, HttpServletRequest request,
-                                                              HttpServletResponse response, String jwt) throws IOException, ServletException {
+//    public UsernamePasswordAuthenticationToken loginWithLocal(ServletRequest servletRequest, ServletResponse servletResponse,
+//                                                              FilterChain filterChain, HttpServletRequest request,
+//                                                              HttpServletResponse response, String jwt) throws IOException, ServletException {
+//        Claims claims = jwtUtils.getAllClaimsFromToken(jwt);
+//        String userName = claims.getSubject();
+//        LOGGER.debug(" * Checking user's token: " + userName);
+//        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+//        Consumer<Map> consumer = (Map item) -> {
+//            authorities.add(new SimpleGrantedAuthority(item.get("role").toString()));
+//        };
+
+    /// /        claims.get("authorities", List.class).stream().forEach(consumer);
+//
+//        Employee userDetails = userRepository.findEmployeeByUserName(userName);
+//        return createSecurityContexHolder(userDetails, authorities, request);
+//    }
+    public UsernamePasswordAuthenticationToken loginWithLocal(
+            ServletRequest servletRequest,
+            ServletResponse servletResponse,
+            FilterChain filterChain,
+            HttpServletRequest request,
+            HttpServletResponse response,
+            String jwt
+    ) throws IOException, ServletException {
+
         Claims claims = jwtUtils.getAllClaimsFromToken(jwt);
         String userName = claims.getSubject();
         LOGGER.debug(" * Checking user's token: " + userName);
-        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        Consumer<Map> consumer = (Map item) -> {
-            authorities.add(new SimpleGrantedAuthority(item.get("role").toString()));
-        };
-        claims.get("authorities", List.class).stream().forEach(consumer);
+
+        // Lấy authorities trực tiếp từ token
+        List<String> authoritiesList = claims.get("authorities", List.class);
+
+        List<SimpleGrantedAuthority> authorities = authoritiesList.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+
         Employee userDetails = userRepository.findEmployeeByUserName(userName);
+
         return createSecurityContexHolder(userDetails, authorities, request);
     }
+
 
     private UsernamePasswordAuthenticationToken createSecurityContexHolder(Employee userDetails, List<SimpleGrantedAuthority> authorities, HttpServletRequest request) {
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
