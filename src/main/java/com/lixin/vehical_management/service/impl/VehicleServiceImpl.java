@@ -31,9 +31,9 @@ public class VehicleServiceImpl implements VehicleService {
     private final EntryExitRecordRepository exitRecordRepository;
 
     @Override
-    public VehicleResponse registerVehicle(VehicleRequest vehicleRequest, Long employeeId) {
-//        Employee user = (Employee) Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
-        Employee employee = userRepository.findById(employeeId).orElseThrow();
+    public VehicleResponse registerVehicle(VehicleRequest vehicleRequest) {
+        Employee user = (Employee) Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
+//        Employee employee = userRepository.findById(employeeId).orElseThrow();
         if (!Objects.isNull(vehicleRequest)) {
             Optional<Vehicle> existingVehicle = vehicleRepository.findByPlateNumber(vehicleRequest.getPlateNumber());
             if (existingVehicle.isPresent()) {
@@ -50,7 +50,7 @@ public class VehicleServiceImpl implements VehicleService {
                 vehicleRepository.save(vehicle);
                 EntryExitType entryExitType = EntryExitType.of(vehicleRequest.getVehicleStatus());
                 EntryExitRecord entryExitRecord = EntryExitRecord.builder()
-                        .employee(employee)
+                        .employee(user)
                         .vehicle(vehicle)
                         .type(entryExitType)
                         .eventTime(LocalDateTime.now())
@@ -124,6 +124,9 @@ public class VehicleServiceImpl implements VehicleService {
         List<VehicleResponse> responses = new java.util.ArrayList<>();
         for (Vehicle vehicle : vehicles) {
             List<EntryExitRecord> records = exitRecordRepository.findByVehicleIdOrderByEventTimeDesc(vehicle.getId());
+            if (records.isEmpty()) {
+                continue;
+            }
                 EntryExitRecord lastRecord = records.get(0);
                 Optional<EntryExitRecord> lastIn = records.stream()
                         .filter(record -> record.getType() == EntryExitType.IN)
