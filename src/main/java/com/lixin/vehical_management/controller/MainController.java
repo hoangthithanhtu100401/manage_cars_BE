@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,6 +61,24 @@ public class MainController {
                                                  @RequestParam(name = "status") String status) {
         exitRecordService.updateRecordVehicle(vehicleId, employeeId, status);
         return ResponseEntity.ok(new BaseResponse<>(CommonMessage.SUCCESS));
+    }
+
+    @PostMapping(value = "/import-excel", consumes = MediaType.MULTIPART_FORM_DATA_VALUE )
+    @Operation(summary = "Import vehicles from Excel",
+
+            description = "Import vehicles from Excel file. Headers: 車主姓名, 行車執照, 手機號碼, 狀態 (IN/OUT)")
+    public ResponseEntity<?> importVehiclesFromExcel(@RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body(new BaseResponse<>("File không được để trống"));
+        }
+
+        String fileName = file.getOriginalFilename();
+        if (fileName == null || !(fileName.endsWith(".xlsx") || fileName.endsWith(".xls"))) {
+            return ResponseEntity.badRequest().body(new BaseResponse<>("Chỉ chấp nhận file Excel (.xlsx, .xls)"));
+        }
+
+        return ResponseEntity.ok(new BaseResponse<>(CommonMessage.SUCCESS,
+                vehicleService.importVehiclesFromExcel(file)));
     }
 
 }
